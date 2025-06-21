@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THIZZCO Agritech - Interactive Project Report</title>
+    <!-- Chosen Palette: Earthy Growth -->
+    <!-- Application Structure Plan: The SPA is designed as a single-page, non-linear dashboard. It uses a sticky navigation bar to allow users (e.g., a loan officer) to jump to key thematic sections: The Opportunity, The Product, Market Deep Dive, Business Case, and Data Insights. This structure facilitates quick access to critical information rather than forcing a linear read-through. Key data points are presented as high-impact stat cards. The core of the application is the 'Data Insights' dashboard, where all charts are presented in a grid. A dropdown filter allows the user to focus on a single chart at a time, enhancing usability and preventing information overload. This interactive, task-oriented design is chosen to make the business proposal more engaging, digestible, and professional. -->
+    <!-- Visualization & Content Choices:
+        - Report Info: Key Market Stats (CAGR, Market Size) -> Goal: Inform -> Viz: Stat Cards (HTML/Tailwind) -> Interaction: None, high-visibility -> Justification: Quick, scannable insights.
+        - Report Info: SWOT Analysis -> Goal: Organize -> Viz: 2x2 Grid Layout (HTML/Tailwind) -> Interaction: None -> Justification: A standard, easily understood business framework.
+        - Report Info: Buyer Profiles -> Goal: Organize -> Viz: Icon-driven cards (HTML/Tailwind) -> Interaction: Tabbed navigation to switch between buyers/competitors -> Justification: Conserves space and organizes related but distinct information cleanly.
+        - Report Info: Org Chart -> Goal: Inform -> Viz: CSS-based diagram -> Interaction: None -> Justification: Visualizes team structure without using images.
+        - Report Info: Adoption Trend -> Goal: Show Change -> Viz: Line Chart (Chart.js) -> Interaction: Hover tooltips, view filtering -> Justification: Ideal for showing trends over time.
+        - Report Info: Energy Consumption -> Goal: Show Proportions -> Viz: Pie Chart (Chart.js) -> Interaction: Hover tooltips, view filtering -> Justification: Best for showing parts of a whole.
+        - Report Info: Efficiency & Environmental Impact -> Goal: Compare -> Viz: Grouped Bar Charts (Chart.js) -> Interaction: Hover tooltips, view filtering -> Justification: Excellent for direct before-and-after or manual-vs-electric comparisons.
+        - Report Info: Farmer Satisfaction -> Goal: Compare/Show Proportions -> Viz: Stacked Bar Chart (Chart.js) -> Interaction: Hover tooltips, view filtering -> Justification: Shows both the total and the breakdown of satisfaction levels.
+        - Library/Method: All charts use Chart.js (Canvas) for interactivity and responsiveness. NO SVG/Mermaid. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF7;
+            color: #3E362E;
+        }
+        .chart-container-wrapper {
+            background-color: #FFFFFF;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+            overflow: hidden;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 40vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+                max-height: 45vh;
+            }
+        }
+        .stat-card {
+            background-color: white;
+            border-left: 5px solid #4A5C48;
+        }
+        .nav-link {
+            transition: color 0.3s;
+        }
+        .nav-link:hover {
+            color: #4A5C48;
+        }
+        .tab {
+            cursor: pointer;
+            padding: 0.75rem 1.5rem;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        .tab.active {
+            border-bottom-color: #4A5C48;
+            color: #4A5C48;
+            font-weight: 600;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header & Navigation -->
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-[#4A5C48]">THIZZCO Agritech</h1>
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#opportunity" class="nav-link text-gray-600 font-medium">The Opportunity</a>
+                <a href="#product" class="nav-link text-gray-600 font-medium">The Product</a>
+                <a href="#market" class="nav-link text-gray-600 font-medium">Market Deep Dive</a>
+                <a href="#business-case" class="nav-link text-gray-600 font-medium">Business Case</a>
+                <a href="#data" class="nav-link text-gray-600 font-medium">Data Insights</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="py-20 bg-white">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-4xl md:text-5xl font-bold text-[#3E362E] mb-4">Revolutionizing Indian Agriculture</h2>
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto">Presenting the THIZZCO Farm Master: an innovative, multi-functional electric weeder designed to empower farmers with sustainable, efficient, and cost-effective technology.</p>
+            </div>
+        </section>
+
+        <!-- The Opportunity -->
+        <section id="opportunity" class="py-16">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h3 class="text-3xl font-bold mb-2">A Thriving Market for Innovation</h3>
+                    <p class="text-gray-600 max-w-3xl mx-auto">India's agricultural sector is a cornerstone of the economy, ripe with potential for modernization. Government support and a growing demand for mechanization create a perfect environment for impactful solutions like the Farm Master.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div class="stat-card p-6 rounded-lg shadow-md">
+                        <p class="text-gray-500 text-sm font-medium">Indian Agritech Potential by 2025</p>
+                        <p class="text-4xl font-bold text-[#4A5C48]">$24 Billion</p>
+                    </div>
+                    <div class="stat-card p-6 rounded-lg shadow-md">
+                        <p class="text-gray-500 text-sm font-medium">Projected Indian Agritech CAGR</p>
+                        <p class="text-4xl font-bold text-[#4A5C48]">~32%</p>
+                    </div>
+                    <div class="stat-card p-6 rounded-lg shadow-md">
+                        <p class="text-gray-500 text-sm font-medium">Global Electric Agri-Machinery by 2030</p>
+                        <p class="text-4xl font-bold text-[#4A5C48]">$150 Billion</p>
+                    </div>
+                    <div class="stat-card p-6 rounded-lg shadow-md">
+                        <p class="text-gray-500 text-sm font-medium">Small/Marginal Farmers in India</p>
+                        <p class="text-4xl font-bold text-[#4A5C48]">>85%</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- The Product -->
+        <section id="product" class="py-16 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h3 class="text-3xl font-bold mb-2">The THIZZCO Farm Master</h3>
+                    <p class="text-gray-600 max-w-3xl mx-auto">More than just a weeder, the Farm Master is a comprehensive solution designed for the modern Indian farmer. This section introduces our flagship product and the team behind it.</p>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <h4 class="text-2xl font-semibold mb-4">A Multifunctional Powerhouse</h4>
+                        <p class="text-gray-600 mb-6">The Farm Master replaces multiple single-use tools, saving farmers time, money, and effort. Its electric design significantly cuts operational costs and environmental impact compared to traditional petrol-powered equipment.</p>
+                        <div class="space-y-4">
+                            <div class="flex items-start">
+                                <span class="text-green-600 font-bold text-xl mr-4">✓</span>
+                                <div>
+                                    <h5 class="font-semibold">Eco-Friendly Weeding</h5>
+                                    <p class="text-gray-500">Zero emissions and quiet operation for sustainable farming.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <span class="text-green-600 font-bold text-xl mr-4">✓</span>
+                                <div>
+                                    <h5 class="font-semibold">Integrated Sprayer</h5>
+                                    <p class="text-gray-500">Efficiently apply fertilizers and pesticides without separate equipment.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <span class="text-green-600 font-bold text-xl mr-4">✓</span>
+                                <div>
+                                    <h5 class="font-semibold">Weight Carrying Capability</h5>
+                                    <p class="text-gray-500">Transport materials across the farm with ease, boosting productivity.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                         <div class="bg-[#fdfbf7] p-6 rounded-lg border border-gray-200">
+                            <h4 class="text-2xl font-semibold mb-6 text-center">Our Team Structure</h4>
+                            <div class="text-center">
+                                <div class="inline-block bg-[#A4B494] text-white font-bold py-2 px-6 rounded-lg">Thizzco Agritech</div>
+                                <div class="w-px bg-gray-400 h-8 mx-auto"></div>
+                                <div class="h-px bg-gray-400 w-full"></div>
+                                <div class="grid grid-cols-4 gap-2 mt-[-1px]">
+                                    <div class="w-px bg-gray-400 h-8 mx-auto"></div>
+                                    <div class="w-px bg-gray-400 h-8 mx-auto"></div>
+                                    <div class="w-px bg-gray-400 h-8 mx-auto"></div>
+                                    <div class="w-px bg-gray-400 h-8 mx-auto"></div>
+                                </div>
+                                <div class="grid grid-cols-4 gap-4 text-sm">
+                                    <div>
+                                        <div class="bg-gray-200 p-2 rounded">Accounting</div>
+                                        <div class="w-px bg-gray-400 h-4 mx-auto"></div>
+                                        <div class="bg-blue-200 p-2 rounded">Pavan</div>
+                                    </div>
+                                    <div>
+                                        <div class="bg-gray-200 p-2 rounded">Manufacturing & Design</div>
+                                        <div class="w-px bg-gray-400 h-4 mx-auto"></div>
+                                        <div class="bg-blue-200 p-2 rounded">Pavan</div>
+                                    </div>
+                                    <div>
+                                        <div class="bg-gray-200 p-2 rounded">Marketing</div>
+                                        <div class="w-px bg-gray-400 h-4 mx-auto"></div>
+                                        <div class="bg-blue-200 p-2 rounded">Sandeep</div>
+                                    </div>
+                                    <div>
+                                        <div class="bg-gray-200 p-2 rounded">Tech</div>
+                                        <div class="w-px bg-gray-400 h-4 mx-auto"></div>
+                                        <div class="bg-blue-200 p-2 rounded">Rajesh</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Market Deep Dive (SWOT, Buyers, Competitors) -->
+        <section id="market" class="py-16">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h3 class="text-3xl font-bold mb-2">Market Dynamics & Strategic Positioning</h3>
+                    <p class="text-gray-600 max-w-3xl mx-auto">A thorough analysis of the market, our target customers, and competitive landscape. We understand where we stand and how we will grow.</p>
+                </div>
+
+                <!-- SWOT Analysis -->
+                <div class="mb-16">
+                    <h4 class="text-2xl font-semibold mb-6 text-center">SWOT Analysis</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="bg-white p-6 rounded-lg shadow-md border-t-4 border-green-600">
+                            <h5 class="text-xl font-bold text-green-700 mb-3">Strengths</h5>
+                            <ul class="list-disc pl-5 space-y-2 text-gray-700">
+                                <li>Multifunctionality (weeding, spraying, weight carrying)</li>
+                                <li>Early mover in Indian market with competitive edge</li>
+                                <li>Electric-powered, promoting eco-friendly agriculture</li>
+                                <li>Reduces dependency on manual labor, enhancing operational efficiency</li>
+                                <li>Tailored for Indian farming ecosystem</li>
+                                <li>Domestic manufacturing for potential cost advantage</li>
+                                <li>Establishing brand credibility before significant competition</li>
+                            </ul>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md border-t-4 border-red-600">
+                            <h5 class="text-xl font-bold text-red-700 mb-3">Weaknesses</h5>
+                            <ul class="list-disc pl-5 space-y-2 text-gray-700">
+                                <li>Limited market awareness of electric weeding technology</li>
+                                <li>Higher initial cost perception</li>
+                                <li>Challenges in ensuring nationwide after-sales support</li>
+                                <li>Dependence on battery technology and charging infrastructure</li>
+                            </ul>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md border-t-4 border-blue-600">
+                            <h5 class="text-xl font-bold text-blue-700 mb-3">Opportunities</h5>
+                            <ul class="list-disc pl-5 space-y-2 text-gray-700">
+                                <li>Growing demand for mechanized farming due to labor shortages</li>
+                                <li>Government support and subsidies for Agri-Tech</li>
+                                <li>Export potential to neighboring countries (Bangladesh, Nepal, Sri Lanka)</li>
+                                <li>Scope for integrating IoT, AI, or GPS technologies</li>
+                                <li>Rising focus on organic farming, supported by pesticide spraying capabilities</li>
+                            </ul>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md border-t-4 border-yellow-600">
+                            <h5 class="text-xl font-bold text-yellow-700 mb-3">Threats</h5>
+                            <ul class="list-disc pl-5 space-y-2 text-gray-700">
+                                <li>Competition from cheaper Chinese manufacturers</li>
+                                <li>Economic constraints of small farmers affecting adoption</li>
+                                <li>Regulatory and certification hurdles</li>
+                                <li>Dependence on adequate rural electric infrastructure</li>
+                                <li>New market entrants from established agri-machinery brands</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Buyers and Competitors Tabbed Section -->
+                <div class="mb-16">
+                    <div class="flex border-b border-gray-200 mb-6">
+                        <div id="buyersTab" class="tab active text-gray-600 font-medium" onclick="switchMarketTab('buyers')">Profile of Buyers</div>
+                        <div id="competitorsTab" class="tab text-gray-600 font-medium" onclick="switchMarketTab('competitors')">Profile of Competitors</div>
+                    </div>
+
+                    <div id="buyersContent" class="tab-content active p-6 bg-white rounded-lg shadow-md">
+                        <h4 class="text-2xl font-semibold mb-4">Who Benefits from THIZZCO Farm Master?</h4>
+                        <p class="text-gray-600 mb-6">Our electric weeder serves a diverse range of agricultural stakeholders, each with unique needs addressed by our product's versatility and efficiency.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="border p-4 rounded-lg">
+                                <h5 class="font-bold text-lg mb-2">Small and Medium-Sized Farmers</h5>
+                                <p class="text-gray-700 text-sm">Seeking affordable, efficient tools to reduce manual labor and optimize resources on 1-10 hectare landholdings.</p>
+                            </div>
+                            <div class="border p-4 rounded-lg">
+                                <h5 class="font-bold text-lg mb-2">Commercial Farming Enterprises</h5>
+                                <p class="text-gray-700 text-sm">Requiring high-capacity, durable machines for extensive farmland, focusing on lower operational costs and enhanced features.</p>
+                            </div>
+                            <div class="border p-4 rounded-lg">
+                                <h5 class="font-bold text-lg mb-2">Organic & Sustainable Farming Practitioners</h5>
+                                <p class="text-gray-700 text-sm">Prioritizing environmentally friendly tools with minimal impact, low energy consumption, and precise weed management.</p>
+                            </div>
+                            <div class="border p-4 rounded-lg">
+                                <h5 class="font-bold text-lg mb-2">Urban Gardeners & Horticultural Enthusiasts</h5>
+                                <p class="text-gray-700 text-sm">Needing compact, quiet, lightweight, and versatile equipment for small plots, nurseries, or greenhouses.</p>
+                            </div>
+                            <div class="border p-4 rounded-lg">
+                                <h5 class="font-bold text-lg mb-2">Equipment Rental Businesses</h5>
+                                <p class="text-gray-700 text-sm">Seeking robust, low-maintenance equipment with high ROI and reliability for a wide customer base.</p>
+                            </div>
+                            <div class="border p-4 rounded-lg">
+                                <h5 class="font-bold text-lg mb-2">Government Bodies & NGOs</h5>
+                                <p class="text-gray-700 text-sm">Looking for reliable, easy-to-use equipment for subsidy programs, training, and rural development initiatives.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="competitorsContent" class="tab-content p-6 bg-white rounded-lg shadow-md">
+                        <h4 class="text-2xl font-semibold mb-4">Our Competitive Edge</h4>
+                        <p class="text-gray-600 mb-6">While competitors exist, THIZZCO Farm Master distinguishes itself through focused innovation and a deep understanding of farmer needs.</p>
+                        <div class="border p-4 rounded-lg">
+                            <h5 class="font-bold text-lg mb-2">Agriezy: A Comparative View</h5>
+                            <p class="text-gray-700 text-sm">A Bengaluru-based competitor offering electric weeders. However, their products may not be as finely tuned to specific farmer needs or offer the unique multi-functional capabilities of the THIZZCO Farm Master. Our product is optimized for efficient weed control, environmental friendliness, and cost-effectiveness, delivering superior value for small and medium-sized farms. We maintain a strong commitment to continuous innovation, ensuring our electric weeder evolves with emerging agricultural trends.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Business Case -->
+        <section id="business-case" class="py-16 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h3 class="text-3xl font-bold mb-2">Our Business Plan & Financial Request</h3>
+                    <p class="text-gray-600 max-w-3xl mx-auto">This section outlines the core details of our project, including our financial requirements and the robust management team driving our success.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                    <div>
+                        <h4 class="text-2xl font-semibold mb-4">Project Overview</h4>
+                        <div class="space-y-4 text-gray-700">
+                            <p><strong>Project Name:</strong> Thizzco Farm Master</p>
+                            <p><strong>Constitution:</strong> OPC (One Person Company) - <span class="text-sm italic">This structure offers limited liability protection while simplifying management for a single individual, combining sole proprietorship benefits with corporate credibility.</span></p>
+                            <p><strong>Address:</strong> <span class="text-sm italic text-red-500">[To be filled: Provide the full registered address of the company.]</span></p>
+                            <p><strong>Registration Number:</strong> <span class="text-sm italic text-red-500">[To be filled: Provide the official company registration number.]</span></p>
+                        </div>
+
+                        <h4 class="text-2xl font-semibold mt-8 mb-4">Financial Request</h4>
+                        <div class="space-y-4 text-gray-700">
+                            <p><strong>Total Project Cost:</strong> <span class="text-sm italic text-red-500">[To be filled: Specify the total estimated cost for the project, including machinery, infrastructure, working capital, etc.]</span></p>
+                            <p><strong>Margin Money:</strong> <span class="text-sm italic text-red-500">[To be filled: State the amount of your own contribution or equity in the project.]</span></p>
+                            <p><strong>Bank Loan Needed:</strong> <span class="text-sm italic text-red-500">[To be filled: Clearly state the exact amount of Mudra loan required.]</span></p>
+                            <p class="text-gray-600 text-sm mt-4">We are seeking financial support through the Mudra Bank loan scheme to scale up production facilities, adopt advanced technologies, and strengthen distribution networks, directly contributing to India's agricultural transformation.</p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="text-2xl font-semibold mb-4">Management & Leadership Team</h4>
+                        <p class="text-gray-600 mb-6">Our leadership team brings a wealth of experience and expertise crucial for the successful execution of this project. Each member plays a vital role in ensuring THIZZCO Agritech achieves its goals.</p>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-sm">
+                                <thead>
+                                    <tr class="bg-gray-100 border-b border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                        <th class="py-3 px-4">Role</th>
+                                        <th class="py-3 px-4">Name</th>
+                                        <th class="py-3 px-4">Education</th>
+                                        <th class="py-3 px-4">Work Exp</th>
+                                        <th class="py-3 px-4">Address</th>
+                                        <th class="py-3 px-4">Aadhaar No.</th>
+                                        <th class="py-3 px-4">Net Worth</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b border-gray-200">
+                                        <td class="py-3 px-4">Director</td>
+                                        <td class="py-3 px-4 text-red-500">[DirectorName]</td>
+                                        <td class="py-3 px-4 text-red-500">[Education]</td>
+                                        <td class="py-3 px-4 text-red-500">[Work Exp]</td>
+                                        <td class="py-3 px-4 text-red-500">[Address]</td>
+                                        <td class="py-3 px-4 text-red-500">[Aadhaar no]</td>
+                                        <td class="py-3 px-4 text-red-500">[Net worth]</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-200">
+                                        <td class="py-3 px-4">CEO</td>
+                                        <td class="py-3 px-4 text-red-500">[CEOName]</td>
+                                        <td class="py-3 px-4 text-red-500">[Education]</td>
+                                        <td class="py-3 px-4 text-red-500">[Work Exp]</td>
+                                        <td class="py-3 px-4 text-red-500">[Address]</td>
+                                        <td class="py-3 px-4 text-red-500">[Aadhaar no]</td>
+                                        <td class="py-3 px-4 text-red-500">[Net worth]</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-3 px-4 text-red-500 italic" colspan="7">... (Add more if needed: Provide detailed profiles for all key management personnel.)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <h4 class="text-2xl font-semibold mt-8 mb-4">Licenses Required</h4>
+                        <p class="text-gray-600 mb-4">To ensure full compliance and operational readiness, the following licenses and certifications are required:</p>
+                        <p class="text-sm italic text-red-500">[To be filled: List all necessary licenses (e.g., Udyam Registration, GST, Pollution Control Board NOC, product certifications like BIS), along with their estimated costs. This demonstrates thorough planning and legal adherence.]</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Data Insights -->
+        <section id="data" class="py-16">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h3 class="text-3xl font-bold mb-2">Key Data & Impact Analysis</h3>
+                    <p class="text-gray-600 max-w-3xl mx-auto">Explore the quantitative evidence supporting the growth of electric agriculture and the significant impact of solutions like the THIZZCO Farm Master. Use the dropdown to navigate through different data perspectives.</p>
+                </div>
+
+                <div class="mb-8">
+                    <label for="chartSelector" class="block text-gray-700 text-lg font-medium mb-2">Select a Data Insight:</label>
+                    <select id="chartSelector" class="block w-full md:w-1/2 lg:w-1/3 p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#4A5C48] focus:border-transparent bg-white">
+                        <option value="adoption">1. Adoption of Electrical Equipment in Farms (2018–2024)</option>
+                        <option value="energy">2. Energy Consumption by Equipment Type (2024)</option>
+                        <option value="efficiency">3. Impact on Operational Efficiency</option>
+                        <option value="satisfaction">4. Farmer Satisfaction Survey (2024)</option>
+                        <option value="environmental">5. Environmental Impact of Electrification (Compared to 2018)</option>
+                    </select>
+                </div>
+
+                <div id="chartDisplayArea" class="grid grid-cols-1 gap-8">
+                    <!-- Chart 1: Adoption of Electrical Equipment in Farms (2018–2024) -->
+                    <div id="adoptionChartContainerWrapper" class="chart-container-wrapper" data-chart-id="adoption">
+                        <h4 class="text-xl font-semibold text-center mb-4">1. Adoption of Electrical Equipment in Farms (2018–2024)</h4>
+                        <div class="chart-container">
+                            <canvas id="adoptionChart"></canvas>
+                        </div>
+                        <p class="text-gray-600 text-sm mt-4 text-center">This chart shows a consistent rise in the percentage of farms adopting electrical equipment over the years. The steady growth from 12% in 2018 to 61% in 2024 reflects increasing farmer confidence in electric solutions and improved availability of such tools in the market.</p>
+                    </div>
+
+                    <!-- Chart 2: Energy Consumption by Equipment Type (2024) -->
+                    <div id="energyChartContainerWrapper" class="chart-container-wrapper hidden" data-chart-id="energy">
+                        <h4 class="text-xl font-semibold text-center mb-4">2. Energy Consumption by Equipment Type (2024)</h4>
+                        <div class="chart-container">
+                            <canvas id="energyChart"></canvas>
+                        </div>
+                        <p class="text-gray-600 text-sm mt-4 text-center">As adoption increased, so did the variety of equipment used. This chart reveals how energy consumption is distributed across different electrical tools. Water pumps, electric tillers, and smart irrigation systems dominate usage—indicating their essential role in core farming activities.</p>
+                    </div>
+
+                    <!-- Chart 3: Impact on Operational Efficiency -->
+                    <div id="efficiencyChartContainerWrapper" class="chart-container-wrapper hidden" data-chart-id="efficiency">
+                        <h4 class="text-xl font-semibold text-center mb-4">3. Impact on Operational Efficiency</h4>
+                        <div class="chart-container">
+                            <canvas id="efficiencyChart"></canvas>
+                        </div>
+                        <p class="text-gray-600 text-sm mt-4 text-center">These key tools have significantly boosted efficiency, as seen here. Electric equipment delivers much higher output per day compared to manual methods across tilling, weeding, spraying, and irrigation—reducing labor demands and increasing productivity.</p>
+                    </div>
+
+                    <!-- Chart 4: Farmer Satisfaction Survey (2024) -->
+                    <div id="satisfactionChartContainerWrapper" class="chart-container-wrapper hidden" data-chart-id="satisfaction">
+                        <h4 class="text-xl font-semibold text-center mb-4">4. Farmer Satisfaction Survey (2024)</h4>
+                        <div class="chart-container">
+                            <canvas id="satisfactionChart"></canvas>
+                        </div>
+                        <p class="text-gray-600 text-sm mt-4 text-center">The efficiency gains are reflected in farmer satisfaction. Most farmers report being “very satisfied” with aspects like ease of use and reliability. Even maintenance and access to spare parts are viewed positively, showing overall acceptance of electric tools.</p>
+                    </div>
+
+                    <!-- Chart 5: Environmental Impact of Electrification (Compared to 2018) -->
+                    <div id="environmentalChartContainerWrapper" class="chart-container-wrapper hidden" data-chart-id="environmental">
+                        <h4 class="text-xl font-semibold text-center mb-4">5. Environmental Impact of Electrification (Compared to 2018)</h4>
+                        <div class="chart-container">
+                            <canvas id="environmentalChart"></canvas>
+                        </div>
+                        <p class="text-gray-600 text-sm mt-4 text-center">This final chart highlights the broader impact: a clear reduction in diesel use, carbon emissions, water wastage, and soil disruption over time. It demonstrates that electrification in agriculture isn’t just beneficial for productivity, but also for long-term environmental sustainability.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[#3E362E] text-white py-8">
+        <div class="container mx-auto px-6 text-center">
+            <p>&copy; 2025 THIZZCO Agritech. All rights reserved.</p>
+            <p class="text-sm mt-2">Empowering Farmers, Nurturing the Earth.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Data for charts (from original report)
+        const adoptionData = {
+            labels: ['2018', '2019', '2020', '2021', '2022', '2023', '2024'],
+            datasets: [{
+                label: '% of Farms Using Electrical Tools',
+                data: [12, 19, 27, 36, 45, 53, 61],
+                borderColor: '#609B60',
+                backgroundColor: 'rgba(96, 155, 96, 0.2)',
+                tension: 0.3,
+                fill: true
+            }]
+        };
+
+        const energyData = {
+            labels: ['Water Pumps', 'Electric Tillers', 'Weed Control Equipment', 'Sprayers', 'Smart Irrigation Systems', 'Drones & Monitoring Tools', 'Tractors (Electric)'],
+            datasets: [{
+                label: '% Share of Total Energy Use',
+                data: [30, 18, 12, 10, 15, 8, 7],
+                backgroundColor: [
+                    '#4A5C48', '#8A9B7A', '#A4B494', '#C3D4B6', '#E2F4D8', '#609B60', '#3E362E'
+                ],
+                hoverOffset: 4
+            }]
+        };
+
+        const efficiencyData = {
+            labels: ['Tilling', 'Weeding', 'Spraying', 'Irrigation'],
+            datasets: [
+                {
+                    label: 'Manual Output',
+                    data: [1.2, 0.8, 15, 1.5],
+                    backgroundColor: '#A4B494',
+                },
+                {
+                    label: 'Electric Output',
+                    data: [2.8, 2.0, 35, 3.5],
+                    backgroundColor: '#4A5C48',
+                }
+            ]
+        };
+
+        const satisfactionData = {
+            labels: ['Ease of Use', 'Reliability', 'Maintenance Cost', 'Access to Spare Parts', 'Overall Satisfaction'],
+            datasets: [
+                {
+                    label: 'Very Satisfied (%)',
+                    data: [65, 58, 45, 40, 62],
+                    backgroundColor: '#4A5C48',
+                },
+                {
+                    label: 'Somewhat Satisfied (%)',
+                    data: [25, 30, 38, 42, 28],
+                    backgroundColor: '#8A9B7A',
+                },
+                {
+                    label: 'Not Satisfied (%)',
+                    data: [10, 12, 17, 18, 10],
+                    backgroundColor: '#C3D4B6',
+                }
+            ]
+        };
+
+        const environmentalData = {
+            labels: ['Diesel Use (L)', 'CO2 (kg)', 'Water Wastage (L/acre)', 'Soil Disturbance Index'],
+            datasets: [
+                {
+                    label: '2018 Level',
+                    data: [900, 2200, 1600, 6.2],
+                    backgroundColor: '#A4B494',
+                },
+                {
+                    label: '2024 Level',
+                    data: [320, 800, 950, 3.8],
+                    backgroundColor: '#4A5C48',
+                }
+            ]
+        };
+
+        const chartInstances = {};
+
+        // Helper function for label wrapping in Chart.js
+        function wrapLabels(labels) {
+            return labels.map(label => {
+                if (label.length > 16) {
+                    const words = label.split(' ');
+                    let currentLine = '';
+                    const newLabels = [];
+                    words.forEach(word => {
+                        if ((currentLine + word).length <= 16) {
+                            currentLine += (currentLine === '' ? '' : ' ') + word;
+                        } else {
+                            newLabels.push(currentLine);
+                            currentLine = word;
+                        }
+                    });
+                    newLabels.push(currentLine);
+                    return newLabels;
+                }
+                return label;
+            });
+        }
+
+        // Initialize Charts
+        function initializeCharts() {
+            const chartConfigs = {
+                adoption: {
+                    type: 'line',
+                    data: adoptionData,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: { display: false },
+                            tooltip: { callbacks: { label: (context) => context.dataset.label + ': ' + context.raw + '%' } }
+                        },
+                        scales: { y: { beginAtZero: true, title: { display: true, text: '% of Farms' }, max: 100 }, x: { title: { display: true, text: 'Year' } } }
+                    }
+                },
+                energy: {
+                    type: 'pie',
+                    data: energyData,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: { display: false },
+                            tooltip: { callbacks: { label: (context) => context.label + ': ' + context.parsed + '%' } },
+                            legend: { position: 'right' }
+                        }
+                    }
+                },
+                efficiency: {
+                    type: 'bar',
+                    data: efficiencyData,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: (context) => {
+                                        let label = context.dataset.label || '';
+                                        if (label) label += ': ';
+                                        if (context.parsed.y !== null) label += context.parsed.y + (context.label === 'Tilling' || context.label === 'Weeding' ? ' hectares' : (context.label === 'Spraying' ? ' tanks' : ' acres'));
+                                        return label;
+                                    }
+                                }
+                            }
+                        },
+                        scales: { y: { beginAtZero: true, title: { display: true, text: 'Output' } }, x: { title: { display: true, text: 'Operation Type' } } }
+                    }
+                },
+                satisfaction: {
+                    type: 'bar',
+                    data: satisfactionData,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: { display: false },
+                            tooltip: { callbacks: { label: (context) => context.dataset.label + ': ' + context.parsed.y + '%' } }
+                        },
+                        scales: { x: { stacked: true, title: { display: true, text: 'Criteria' } }, y: { stacked: true, beginAtZero: true, title: { display: true, text: '% of Respondents' }, max: 100 } }
+                    }
+                },
+                environmental: {
+                    type: 'bar',
+                    data: environmentalData,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: (context) => {
+                                        let label = context.dataset.label || '';
+                                        if (label) label += ': ';
+                                        if (context.parsed.y !== null) label += context.parsed.y + (context.label === 'Diesel Use (L)' ? ' L' : (context.label === 'CO2 (kg)' ? ' kg' : (context.label === 'Water Wastage (L/acre)' ? ' L/acre' : '')));
+                                        return label;
+                                    }
+                                }
+                            }
+                        },
+                        scales: { y: { beginAtZero: true, title: { display: true, text: 'Value per Season' } }, x: { title: { display: true, text: 'Parameter' } } }
+                    }
+                }
+            };
+
+            for (const chartId in chartConfigs) {
+                const ctx = document.getElementById(chartId + 'Chart').getContext('2d');
+                chartInstances[chartId] = new Chart(ctx, chartConfigs[chartId]);
+            }
+        }
+
+        // Chart Selector Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeCharts();
+
+            const chartSelector = document.getElementById('chartSelector');
+            const chartContainers = document.querySelectorAll('.chart-container-wrapper');
+
+            function showSelectedChart() {
+                const selectedChartId = chartSelector.value;
+                chartContainers.forEach(container => {
+                    if (container.dataset.chartId === selectedChartId) {
+                        container.classList.remove('hidden');
+                        container.classList.add('flex', 'flex-col'); // Ensure flex for vertical centering
+                    } else {
+                        container.classList.add('hidden');
+                        container.classList.remove('flex', 'flex-col');
+                    }
+                });
+            }
+
+            chartSelector.addEventListener('change', showSelectedChart);
+            showSelectedChart(); // Show initial chart on load
+
+            // Tab switching logic for Market section
+            window.switchMarketTab = function(tabName) {
+                const tabs = ['buyers', 'competitors'];
+                tabs.forEach(tab => {
+                    const tabElement = document.getElementById(tab + 'Tab');
+                    const contentElement = document.getElementById(tab + 'Content');
+                    if (tab === tabName) {
+                        tabElement.classList.add('active');
+                        contentElement.classList.add('active');
+                    } else {
+                        tabElement.classList.remove('active');
+                        contentElement.classList.remove('active');
+                    }
+                });
+            };
+            // Initial tab display
+            switchMarketTab('buyers');
+        });
+    </script>
+</body>
+</html>
